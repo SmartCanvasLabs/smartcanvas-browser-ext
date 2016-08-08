@@ -68,7 +68,7 @@
       "19": "images/icon-19.png",
       "38": "images/icon-38.png"
     },
-    "default_title": "smart-canvas",
+    "default_title": "Smart Canvas",
     "default_popup": "popup.html"
   },
   "web_accessible_resources": [
