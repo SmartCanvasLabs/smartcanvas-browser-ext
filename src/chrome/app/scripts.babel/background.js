@@ -4,7 +4,7 @@ chrome.runtime.onInstalled.addListener(details => {
   console.log('previousVersion', details.previousVersion);
 });
 
-chrome.browserAction.setBadgeText({text: '\'Allo'});
+//chrome.browserAction.setBadgeText({text: '\'Allo'});
 
 //Refernce: https://github.com/ProLoser/Github-Omnibox
 chrome.omnibox.onInputEntered.addListener(function (text) {
