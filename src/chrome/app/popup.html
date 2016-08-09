@@ -11,14 +11,23 @@
     <!-- endbuild -->
   </head>
   <body>
-    <h1>'Allo, 'Allo!</h1>
-    <h2>Vinicius Patrinhani</h2>
-    <button id="mybutton">Click Me</button>
-
     <!-- build:js scripts/popup-vendor.js -->
     <!-- bower:js -->
     <!-- endbower -->
     <!-- endbuild -->
+
+    <div id="appPreloader" class="scanvas-app-preloader">
+      <div class="loader-container">
+        <div id="loader-wrapper">
+          <div id="loader">
+            <span class="span01"></span>
+            <span class="span02"></span>
+            <span class="span03"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
     <!-- build:js scripts/popup.js -->
     <script src="scripts/popup.js"></script>
