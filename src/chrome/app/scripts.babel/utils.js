@@ -7,7 +7,7 @@ var Utils = (function () {
   }
 
   Utils.prototype.redirectToLogin = function () {
-    var newURL = this.domain + '/?reason=401&redirectFrom='+encodeURIComponent(this.domain + '/chrome-extension');
+    var newURL = this.domain + '/?reason=401&redirectFrom='+encodeURIComponent(this.domain + '/f/chrome-extension');
     chrome.tabs.create({ url: newURL });
   };
 
