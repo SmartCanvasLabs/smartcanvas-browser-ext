@@ -2,13 +2,12 @@ var Utils = (function () {
   
   function Utils() {
     this.domain = 'http://ciandt.d.scanvas.me';
-    this.loginDomain = 'http://d.smartcanvas.com';
     this.iframeContentUrl = 'http://storage.googleapis.com/static.smartcanvas.com/embed/dev/smartcanvas-embed.html';
-    // this.iframeContentUrl = = 'http://localhost:8899/smartcanvas-embed.html';
+    // this.iframeContentUrl = 'http://localhost:8899/smartcanvas-embed.html';
   }
 
   Utils.prototype.redirectToLogin = function () {
-    var newURL = this.loginDomain + '/?reason=401&redirectFrom='+encodeURIComponent(this.loginDomain + '/#!/chrome-extension') + '#!/signin';
+    var newURL = this.domain + '/?reason=401&redirectFrom='+encodeURIComponent(this.domain + '/chrome-extension');
     chrome.tabs.create({ url: newURL });
   };
 
