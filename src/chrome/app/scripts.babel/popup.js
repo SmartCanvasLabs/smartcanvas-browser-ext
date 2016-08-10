@@ -1,16 +1,32 @@
 (function(window){
-  var contentUrl = 'http://storage.googleapis.com/static.smartcanvas.com/embed/1.31+6dda392/smartcanvas-embed.html';
-  var domain = 'http://ciandt.d.scanvas.me';
-  var domainApi = 'http://sc-core-dev.appspot.com';
+  var utils = new Utils();
+  
+  var contentUrl = utils.iframeContentUrl;
+  var domain = utils.domain;
   var language = 'en';
-  var token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJmYWtlci5zbWFydGNhbnZhcy5jb20iLCJ0bnQiOiJjaWFuZHQiLCJzdWIiOiJsdWNhc3BAY2lhbmR0LmNvbSIsImV4cCI6MTQ3MzM0OTQwNSwiaWF0IjoxNDcwNzU3NDA1LCJqdGkiOiJlZDU3N2YwZC0xZmNhLTQ2YjctYjU3NS04YmYwODljMzQyNjgifQ.fGB7_g5pvAvqEzPnOOtxEeFhfpI1evTfcpfHrXPg5rA';
+  
   var preloader = document.getElementById('appPreloader');
+  var token;
   var content;
+  
 
-  function init(config){
+  chrome.cookies.getAll({
+    url: domain,
+    name: 'acctk'
+  }, function(a){
+    if(a[0]){
+      token = a[0].value;
+      init();
+    }else{
+      utils.redirectToLogin();
+    }
+  });
+
+
+  function init(){
     createContent();
     attachEvents();
-  }
+  } 
 
   function createContent(){
     var styles = {
@@ -22,7 +38,7 @@
     };
 
     content = document.createElement('iframe');
-    content.src = contentUrl + '?domain=' + domain + '&token=' + token + '&language=' + language + '&domainApi=' + domainApi;
+    content.src = contentUrl + '?domain=' + domain + '&token=' + token + '&language=' + language + '&domainApi=' + domain;
     setStyles(content, styles);
 
     document.body.appendChild(content);
@@ -47,11 +63,12 @@
 
         chrome.browserAction.setBadgeText({
           'text': String(e.data.length)
-        })
+        });
+
+      }else if(e.data.type === 'SCE_AJAX_ERROR'){
+        utils.redirectToLogin();
       }
     });
   }
-
-  init();
 
 })(window);
