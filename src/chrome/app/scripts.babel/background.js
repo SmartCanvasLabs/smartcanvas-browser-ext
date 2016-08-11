@@ -4,9 +4,7 @@
 
   var backgroundScript = {
     init: function(){
-      this.onInstalledEvent();
-      this.omniEvents();
-      this.onMessageExternalEvent();
+      this.events();
     },
 
     redirectToLoginIfNotlogged: function(){
@@ -18,28 +16,19 @@
       });      
     },
 
-    omniEvents: function(){
+    events: function(){
+      var that = this;
+
       //Refernce: https://github.com/ProLoser/Github-Omnibox
       chrome.omnibox.onInputEntered.addListener(function(text) {
         console.log('[smartcanvas.onInputEntered]: ', text);
         if (text) omni.decide(text);
       });
-    },
-
-    onInstalledEvent: function(){
-      var that = this;
+    
       chrome.runtime.onInstalled.addListener(function(details){
         console.log('[smartcanvas.onInstalled]');
         console.log('previousVersion: ', details.previousVersion);
         that.redirectToLoginIfNotlogged();
-      });
-    },
-
-    onMessageExternalEvent: function(){
-      chrome.runtime.onMessageExternal.addListener(function(request, sender, sendResponse) {
-        if(request === 'logged'){
-          console.log('logged');
-        }
       });
     }
 

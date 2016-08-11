@@ -1,3 +1,5 @@
-'use strict';
-
-console.log('\'Allo \'Allo! Content script');
+(function(){
+  document.addEventListener('open-chrome-extension', function(){
+    // alert('opening')
+  }, false);
+})();
