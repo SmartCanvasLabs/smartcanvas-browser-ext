@@ -17,8 +17,8 @@
       "scripts/background.js"
     ]
   },
-
   "permissions": [
+    "activeTab",
     "tabs",
     "http://*/*",
     "https://*/*",
@@ -55,8 +55,8 @@
     },
     {
       "matches": ["*://*/*"],
-      "js": ["scripts/contentscript.js"],
-      "run_at": "document_end"
+      "js": ["scripts/utils.js", "scripts/contentscript.js"],
+      "run_at": "document_start"
     }
   ],
 
@@ -65,8 +65,7 @@
       "19": "images/icon-19.png",
       "38": "images/icon-38.png"
     },
-    "default_title": "Smart Canvas",
-    "default_popup": "popup.html"
+    "default_title": "Smart Canvas"
   },
 
   "web_accessible_resources": [
