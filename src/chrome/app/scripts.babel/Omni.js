@@ -1,8 +1,10 @@
 var Omni = (function () {
+    var utils = new Utils();
+
     Omni.prototype.debug = false;
 
     Omni.prototype.urls = {
-        search: 'https://ciandt.smartcanvas.com/s/'
+        search: utils.searchUrl
     };
 
     Omni.prototype.api = null;

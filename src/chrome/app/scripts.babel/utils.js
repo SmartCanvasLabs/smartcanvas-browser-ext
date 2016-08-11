@@ -29,7 +29,7 @@ var Utils = (function () {
       req.withCredentials = true;
 
       if(opts.token){
-        req.setRequestHeader("x-access-token", opts.token);  
+        req.setRequestHeader('x-access-token', opts.token);  
       }
 
       req.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
