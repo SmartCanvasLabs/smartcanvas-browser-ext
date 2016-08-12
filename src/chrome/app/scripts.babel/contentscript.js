@@ -1,5 +1,7 @@
 (function(){  
   var content;
+  var iframe;
+  var appPreloader;
   var utils;
 
   init();
@@ -20,23 +22,29 @@
     var domain = utils.domain;
     var domainApi = utils.domainApi;
     var language = 'en';
-    var styles = {
-      width: '370px',
-      height: '400px',
-      position: 'fixed',
-      top: '15px', 
-      right: '15px',
-      backgroundColor: '#f9f9f9',
-      border: 'none',
-      borderRadius: '3px',
-      zIndex: '9100',
-      boxShadow: '0 10px 32px 0 rgba(0, 0, 0, 0.36), 0 16px 16px 0 rgba(0, 0, 0, 0.04)'
-    };
 
-    content = document.createElement('iframe');
-    content.src = contentUrl + '?domain=' + domain + '&token=' + token + '&language=' + language + '&domainApi=' + domainApi;
+    appPreloader = document.createElement('div');
+    appPreloader.className = 'sce-preloader';
+    appPreloader.innerHTML = 
+      '<div class="sce-loader-container">' +
+        '<div class="sce-loader-wrapper">' +
+          '<div class="sce-loader">' +
+            '<span class="sce-span01"></span>' +
+            '<span class="sce-span02"></span>' +
+            '<span class="sce-span03"></span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
 
-    setStyles(content, styles);
+    iframe = document.createElement('iframe');
+    iframe.className = 'sce-iframe';
+    iframe.src = contentUrl + '?domain=' + domain + '&token=' + token + '&language=' + language + '&domainApi=' + domainApi;
+
+    content = document.createElement('div');
+    content.className = 'sce-content';
+
+    content.appendChild(appPreloader);
+    content.appendChild(iframe);
 
     document.body.appendChild(content);
   }
@@ -54,6 +62,9 @@
       if(e.data.type === 'SCE_CLOSE'){
         destroy();
       }else if(e.data.type === 'SCE_LENGTH'){
+        setStyles(appPreloader, {display: 'none' });
+        setStyles(iframe, {display: 'block' });
+
         chrome.runtime.sendMessage({ type: 'set-badge', value: e.data.length });
       }else if(e.data.type === 'SCE_AJAX_ERROR'){
         utils.redirectToLogin();
