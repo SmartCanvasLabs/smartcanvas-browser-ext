@@ -1,11 +1,5 @@
 var Omni = (function () {
-    var utils = new Utils();
-
     Omni.prototype.debug = false;
-
-    Omni.prototype.urls = {
-        search: utils.searchUrl
-    };
 
     Omni.prototype.api = null;
 
@@ -13,7 +7,10 @@ var Omni = (function () {
 
     Omni.prototype.caches = null;
 
-    function Omni(authorized) {
+    function Omni(searchUrl) {
+        this.urls = {
+            search: searchUrl
+        };
         // this.api = new OAuth2('github', {
         //     client_id: '9b3a55174a275a8b56ce',
         //     client_secret: 'aea80effa00cc2b98c1cc590ade40ba05cbeea1e',

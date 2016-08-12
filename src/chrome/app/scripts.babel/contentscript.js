@@ -1,23 +1,6 @@
-(function(){
-
-  var utils = new Utils();
-  
-  var contentUrl = utils.iframeContentUrl;
-  var domain = utils.domain;
-  var domainApi = utils.domainApi;
-  var language = 'en';
-
+(function(){  
   var content;
-
-  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-    if(request.type == 'open-dialog'){
-      if(content){
-        destroy();
-      }else{
-        create(request.token);
-      }
-    }
-  });
+  var utils;
 
   init();
 
@@ -30,7 +13,13 @@
     content = undefined;
   }
 
-  function create(token){
+  function create(token, bgUtils){
+    utils = bgUtils;
+
+    var contentUrl = utils.iframeContentUrl;
+    var domain = utils.domain;
+    var domainApi = utils.domainApi;
+    var language = 'en';
     var styles = {
       width: '370px',
       height: '400px',
@@ -74,6 +63,16 @@
     document.addEventListener('open-chrome-extension', function(){
       chrome.runtime.sendMessage({ type: 'open-chrome-extension-event' });
     }, false);
+
+    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+      if(request.type == 'open-dialog'){
+        if(content){
+          destroy();
+        }else{
+          create(request.token, request.utils);
+        }
+      }
+    });
   }
 
 })();

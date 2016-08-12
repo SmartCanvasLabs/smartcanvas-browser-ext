@@ -1,10 +1,37 @@
 (function() {
-  var omni = new Omni(localStorage.setup === 'true');
-  var utils = new Utils();
+  var omni;
+  var utils;
 
   var backgroundScript = {
     init: function(){
+      this.getTenantAndStartUtils();
       this.events();
+    },
+
+    getTenantAndStartUtils: function(callback){
+      chrome.cookies.getAll({
+        domain: 'd.scanvas.me',
+        name: 'tenant'
+      }, function(cookies){
+        var tenant = cookies[0].value;
+
+        utils = new Utils({
+          domain: 'http://' + tenant + '.d.scanvas.me',
+          domainLogin: 'http://d.smartcanvas.com',
+          domainApi: 'https://sc-core-dev.appspot.com',
+          iframeContentUrl: 'https://storage.googleapis.com/static.smartcanvas.com/embed/dev/smartcanvas-embed.html'
+        })
+
+        omni = new Omni(utils.searchUrl);
+
+        if(!tenant){
+          utils.redirectToLogin();
+        }
+
+        if(callback){
+          callback();
+        }
+      });
     },
 
     redirectToLoginIfNotlogged: function(){
@@ -45,15 +72,23 @@
 
     openDialogMessage: function(){
       var that = this;
+
+      that.getTenantAndStartUtils(function(){
+        that.getEnvironmentCookiePromise()
+          .then(function(token){
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+              chrome.tabs.sendMessage(tabs[0].id, { 
+                type: 'open-dialog', 
+                token: token, 
+                utils: utils 
+              });
+            });
+          }, function(){
+            utils.redirectToLogin();
+          });        
+      })
       
-      that.getEnvironmentCookiePromise()
-        .then(function(token){
-          chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-            chrome.tabs.sendMessage(tabs[0].id, { type: 'open-dialog', token: token });
-          });
-        }, function(){
-          utils.redirectToLogin();
-        });
+
 
     },
 

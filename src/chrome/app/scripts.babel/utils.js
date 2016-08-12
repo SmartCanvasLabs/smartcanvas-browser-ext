@@ -1,13 +1,13 @@
 var Utils = (function () {
   
-  function Utils() {
-    this.domain = 'http://ciandt.d.scanvas.me';
-    this.domainLogin = 'http://d.smartcanvas.com';
-    this.domainApi = 'https://sc-core-dev.appspot.com';
+  function Utils(config) {
+    this.domain = config.domain;
+    this.domainLogin = config.domainLogin;
+    this.domainApi = config.domainApi;
+    this.iframeContentUrl = config.iframeContentUrl; 
     this.officialCardsApi = this.domainApi + '/embedded/search/v1/cards/official';
     this.searchUrl = this.domain + '/s/';
-    this.iframeContentUrl = 'https://storage.googleapis.com/static.smartcanvas.com/embed/dev/smartcanvas-embed.html'; 
-    // this.iframeContentUrl = 'http://localhost:8899/smartcanvas-embed.html';
+    
   }
 
   Utils.prototype.redirectToChromeExtensionPage = function(){
