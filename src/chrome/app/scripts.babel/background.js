@@ -1,31 +1,27 @@
 (function() {
   var omni;
-  var utils;
 
   var backgroundScript = {
     init: function(){
-      this.getTenantAndStartUtils();
+      this.getTenantAndStartENV();
       this.events();
     },
 
-    getTenantAndStartUtils: function(callback){
+    getTenantAndStartENV: function(callback){
       chrome.cookies.getAll({
-        domain: 'd.scanvas.me',
+        domain: ENVIRONMENT._domain,
         name: 'tenant'
       }, function(cookies){
         var tenant = cookies[0].value;
 
-        utils = new Utils({
-          domain: 'http://' + tenant + '.d.scanvas.me',
-          domainLogin: 'http://d.smartcanvas.com',
-          domainApi: 'https://sc-core-dev.appspot.com',
-          iframeContentUrl: 'https://storage.googleapis.com/static.smartcanvas.com/embed/dev/smartcanvas-embed.html'
-        })
+        ENVIRONMENT.domain = ENVIRONMENT._domainProtocol + tenant + '.' +  ENVIRONMENT._domain;
+        ENVIRONMENT.searchUrl = ENVIRONMENT.domain + ENVIRONMENT._searchPath;
+        ENVIRONMENT.officialCardsApi = ENVIRONMENT.domainApi + ENVIRONMENT._officialCardsApiPath;
 
-        omni = new Omni(utils.searchUrl);
+        omni = new Omni(ENVIRONMENT.searchUrl);
 
         if(!tenant){
-          utils.redirectToLogin();
+          that.redirectToLogin();
         }
 
         if(callback){
@@ -51,21 +47,30 @@
       var that = this;
 
       that.makeAjax({
-        url: utils.officialCardsApi,
+        url: ENVIRONMENT.officialCardsApi,
         success: function(data){
           var json = JSON.parse(data.response);
 
-          utils.redirectToChromeExtensionPage();
+          that.redirectToChromeExtensionPage();
           that.setBadge(json.meta.count);
         }
       });
+    },
+
+    redirectToChromeExtensionPage: function(){
+      chrome.tabs.create({ url: ENVIRONMENT.domain + '/f/chrome-extension' });
+    },
+
+    redirectToLogin: function() {
+      var newURL = ENVIRONMENT.domainLogin + '/?reason=401&redirectFrom='+encodeURIComponent(ENVIRONMENT.domain + '/f/chrome-extension') + '#!/signin';
+      chrome.tabs.create({ url: newURL });
     },
 
     updateBadgeNumber: function(){
       var that = this;
 
       that.makeAjax({
-        url: utils.officialCardsApi,
+        url: ENVIRONMENT.officialCardsApi,
         success: function(data){
           var json = JSON.parse(data.response);
           that.setBadge(json.meta.count);
@@ -76,18 +81,18 @@
     openDialogMessage: function(){
       var that = this;
 
-      that.getTenantAndStartUtils(function(){
+      that.getTenantAndStartENV(function(){
         that.getEnvironmentCookiePromise()
           .then(function(token){
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
               chrome.tabs.sendMessage(tabs[0].id, { 
                 type: 'open-dialog', 
                 token: token, 
-                utils: utils 
+                environment: ENVIRONMENT
               });
             });
           }, function(){
-            utils.redirectToLogin();
+            that.redirectToLogin();
           });        
       });
     },
@@ -101,7 +106,7 @@
     getEnvironmentCookiePromise: function(){
       return new Promise(function(resolve, reject) {        
         chrome.cookies.getAll({
-          url: utils.domain,
+          url: ENVIRONMENT.domain,
           name: 'acctk'
         }, function(cookies){
           if(cookies[0]){
@@ -118,7 +123,7 @@
 
       that.getEnvironmentCookiePromise()
         .then(function(token){
-          utils.createPromiseHttpRequest({
+          that.createPromiseHttpRequest({
             url: obj.url,
             method: obj.method,
             data: obj.data,
@@ -134,8 +139,40 @@
             }
           });
         }, function(){
-          utils.redirectToLogin();
+          that.redirectToLogin();
         });
+    },
+
+    createPromiseHttpRequest: function(opts) {
+      opts = opts || {};
+      opts.method = opts.method || 'GET';
+
+      return new Promise(function(resolve, reject) {
+        var req = new XMLHttpRequest();
+        req.open(opts.method, encodeURI(opts.url), true);
+        req.withCredentials = true;
+
+        if(opts.token){
+          req.setRequestHeader('x-access-token', opts.token);  
+        }
+
+        req.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        
+        req.onload = function() {
+          if (req.status === 200) {
+            resolve(req);
+          }
+          else{
+            reject(req);
+          }
+        };
+        
+        req.onerror = function() {
+          reject(Error('Network Error'));
+        };
+
+        req.send();
+      });
     },
 
     events: function(){
@@ -162,6 +199,8 @@
           that.openDialogMessage();
         }else if(request.type === 'set-badge'){
           that.setBadge(request.value);
+        }else if(request.type === 'extension-bg-redirect-to-login'){
+          that.redirectToLogin();
         }
       });
 

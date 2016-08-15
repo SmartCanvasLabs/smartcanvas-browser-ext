@@ -11,7 +11,7 @@
   "default_locale": "en",
   "background": {
     "scripts": [
-      "scripts/utils.js",
+      "vars/environment.js",
       "scripts/chromereload.js",
       "scripts/Omni.js",
       "scripts/background.js"
@@ -56,7 +56,7 @@
     },
     {
       "matches": ["*://*/*"],
-      "js": ["scripts/utils.js", "scripts/contentscript.js"],
+      "js": ["scripts/contentscript.js"],
       "css": ["styles/contentscript.css"],
       "run_at": "document_start"
     }

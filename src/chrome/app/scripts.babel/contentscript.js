@@ -2,7 +2,7 @@
   var content;
   var iframe;
   var appPreloader;
-  var utils;
+  var ENVIRONMENT;
 
   init();
 
@@ -15,12 +15,12 @@
     content = undefined;
   }
 
-  function create(token, bgUtils){
-    utils = bgUtils;
+  function create(token, bgEnvironment){
+    ENVIRONMENT = bgEnvironment;
 
-    var contentUrl = utils.iframeContentUrl;
-    var domain = utils.domain;
-    var domainApi = utils.domainApi;
+    var contentUrl = ENVIRONMENT.iframeContentUrl;
+    var domain = ENVIRONMENT.domain;
+    var domainApi = ENVIRONMENT.domainApi;
     var language = 'en';
 
     appPreloader = document.createElement('div');
@@ -77,7 +77,7 @@
 
         chrome.runtime.sendMessage({ type: 'set-badge', value: e.data.length });
       }else if(e.data.type === 'SCE_AJAX_ERROR' && e.data.location === 'CHROME_EXTENSION'){
-        utils.redirectToLogin();
+        chrome.runtime.sendMessage({ type: 'extension-bg-redirect-to-login' });
       }
     });
 
@@ -90,7 +90,7 @@
         if(content){
           destroy();
         }else{
-          create(request.token, request.utils);
+          create(request.token, request.environment);
         }
       }
     });
