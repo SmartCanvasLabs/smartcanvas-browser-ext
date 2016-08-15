@@ -38,7 +38,17 @@
 
     iframe = document.createElement('iframe');
     iframe.className = 'sce-iframe';
-    iframe.src = contentUrl + '?domain=' + domain + '&token=' + token + '&language=' + language + '&domainApi=' + domainApi;
+    iframe.src = contentUrl;
+    iframe.onload = function(){
+      iframe.contentWindow.postMessage({
+        type: 'SCE_INIT',
+        domain: domain,
+        token: token,
+        language: language,
+        domainApi: domainApi,
+        location: 'CHROME_EXTENSION'
+      }, '*');
+    };
 
     content = document.createElement('div');
     content.className = 'sce-content';
@@ -59,14 +69,14 @@
     var that = this;
 
     window.addEventListener('message', function(e){
-      if(e.data.type === 'SCE_CLOSE'){
+      if(e.data.type === 'SCE_CLOSE' && e.data.location === 'CHROME_EXTENSION'){
         destroy();
-      }else if(e.data.type === 'SCE_LENGTH'){
+      }else if(e.data.type === 'SCE_LENGTH' && e.data.location === 'CHROME_EXTENSION'){
         setStyles(appPreloader, {display: 'none' });
         setStyles(iframe, {display: 'block' });
 
         chrome.runtime.sendMessage({ type: 'set-badge', value: e.data.length });
-      }else if(e.data.type === 'SCE_AJAX_ERROR'){
+      }else if(e.data.type === 'SCE_AJAX_ERROR' && e.data.location === 'CHROME_EXTENSION'){
         utils.redirectToLogin();
       }
     });
