@@ -8,21 +8,20 @@
     },
 
     getTenantAndStartENV: function(callback){
+      var that = this;
+
       chrome.cookies.getAll({
         domain: ENVIRONMENT._domain,
         name: 'tenant'
       }, function(cookies){
-        var tenant = cookies[0].value;
+        var tenant = cookies[0] && cookies[0].value;
 
         ENVIRONMENT.domain = ENVIRONMENT._domainProtocol + tenant + '.' +  ENVIRONMENT._domain;
+        ENVIRONMENT.domainApi = ENVIRONMENT._domainProtocol + tenant + '.' +  ENVIRONMENT._domainApi;
         ENVIRONMENT.searchUrl = ENVIRONMENT.domain + ENVIRONMENT._searchPath;
         ENVIRONMENT.officialCardsApi = ENVIRONMENT.domainApi + ENVIRONMENT._officialCardsApiPath;
 
         omni = new Omni(ENVIRONMENT.searchUrl);
-
-        if(!tenant){
-          that.redirectToLogin();
-        }
 
         if(callback){
           callback();

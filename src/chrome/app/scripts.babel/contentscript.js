@@ -2,6 +2,7 @@
   var content;
   var iframe;
   var appPreloader;
+  var noCardsAvailable;
   var ENVIRONMENT;
 
   init();
@@ -50,9 +51,16 @@
       }, '*');
     };
 
+    noCardsAvailable = document.createElement('div');
+    noCardsAvailable.className = 'sce-no-cards-available';
+    noCardsAvailable.innerHTML =
+      '<div class="sce-no-cards-available-image"></div>' +
+      '<p class="sce-no-cards-available-message">No Official Communications</p>';
+
     content = document.createElement('div');
     content.className = 'sce-content';
 
+    content.appendChild(noCardsAvailable);
     content.appendChild(appPreloader);
     content.appendChild(iframe);
 
@@ -72,10 +80,15 @@
       if(e.data.type === 'SCE_CLOSE' && e.data.location === 'CHROME_EXTENSION'){
         destroy();
       }else if(e.data.type === 'SCE_LENGTH' && e.data.location === 'CHROME_EXTENSION'){
-        setStyles(appPreloader, {display: 'none' });
-        setStyles(iframe, {display: 'block' });
-
-        chrome.runtime.sendMessage({ type: 'set-badge', value: e.data.length });
+        if(e.data.length){
+          setStyles(appPreloader, {display: 'none' });
+          setStyles(iframe, {display: 'block' });
+          chrome.runtime.sendMessage({ type: 'set-badge', value: e.data.length });
+        }else{
+          setStyles(appPreloader, {display: 'none' });
+          setStyles(noCardsAvailable, {display: 'flex' });
+        }
+        
       }else if(e.data.type === 'SCE_AJAX_ERROR' && e.data.location === 'CHROME_EXTENSION'){
         chrome.runtime.sendMessage({ type: 'extension-bg-redirect-to-login' });
       }
