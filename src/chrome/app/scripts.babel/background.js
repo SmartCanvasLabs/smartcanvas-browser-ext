@@ -34,40 +34,43 @@
       });
     },
 
+    // startContextMenus: function(){
+    //   var that = this;
+
+    //   chrome.contextMenus.removeAll();
+    //   chrome.contextMenus.create({
+    //     title: "Share a link",
+    //     contexts: ["page"],
+    //     onclick: function(e) {
+    //       console.log('context-menu ', e);
+    //     }
+    //   });
+    // },
+
     redirectToLoginIfNotlogged: function(){
       var that = this;
 
-      that.getEnvironmentCookiePromise()
-        .then(function(token){
-          utils.createPromiseHttpRequest({
-            url: utils.officialCardsApi,
-            token: token
-          })
-          .then(function(data){
-            var json = JSON.parse(data.response);
+      that.makeAjax({
+        url: utils.officialCardsApi,
+        success: function(data){
+          var json = JSON.parse(data.response);
 
-            utils.redirectToChromeExtensionPage();
-            that.setBadge(json.meta.count);
-          });
-        }, function(){
-          utils.redirectToLogin();
-        });
+          utils.redirectToChromeExtensionPage();
+          that.setBadge(json.meta.count);
+        }
+      });
     },
 
     updateBadgeNumber: function(){
       var that = this;
 
-      that.getEnvironmentCookiePromise()
-        .then(function(token){
-          utils.createPromiseHttpRequest({
-            url: utils.officialCardsApi,
-            token: token
-          }).then(function(data){
-            var json = JSON.parse(data.response);
-            that.setBadge(json.meta.count);
-          });
-        });
-
+      that.makeAjax({
+        url: utils.officialCardsApi,
+        success: function(data){
+          var json = JSON.parse(data.response);
+          that.setBadge(json.meta.count);
+        }
+      });
     },
 
     openDialogMessage: function(){
@@ -86,10 +89,7 @@
           }, function(){
             utils.redirectToLogin();
           });        
-      })
-      
-
-
+      });
     },
 
     setBadge: function(num){
@@ -111,6 +111,31 @@
           }
         });
       });
+    },
+
+    makeAjax: function(obj){
+      var that = this;
+
+      that.getEnvironmentCookiePromise()
+        .then(function(token){
+          utils.createPromiseHttpRequest({
+            url: obj.url,
+            method: obj.method,
+            data: obj.data,
+            token: token
+          })
+          .then(function(data){
+            if(obj.success){
+              obj.success(data);
+            }
+          }, function(e){
+            if(obj.error){
+              obj.error(e);
+            }
+          });
+        }, function(){
+          utils.redirectToLogin();
+        });
     },
 
     events: function(){

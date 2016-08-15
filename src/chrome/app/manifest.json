@@ -29,6 +29,7 @@
     "clipboardRead",
     "clipboardWrite",
     "contentSettings",
+    "contextMenus",
     "cookies",
     "*://*.google.com/",
     "notifications",
