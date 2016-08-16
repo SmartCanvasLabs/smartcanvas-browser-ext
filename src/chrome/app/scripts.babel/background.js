@@ -4,7 +4,7 @@
   var backgroundScript = {
     init: function(){
       this.getTenantAndStartENV();
-      this.events();
+      this.events(); 
     },
 
     getTenantAndStartENV: function(callback){
@@ -98,7 +98,7 @@
 
     setBadge: function(num){
       chrome.browserAction.setBadgeText({
-        'text': String(num)
+        'text': num ? String(num) : false
       });
     },
 

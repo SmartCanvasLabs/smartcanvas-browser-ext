@@ -11,7 +11,7 @@
   "default_locale": "en",
   "background": {
     "scripts": [
-      "vars/environment.js",
+      "vars/dev/environment.js",
       "scripts/chromereload.js",
       "scripts/Omni.js",
       "scripts/background.js"
