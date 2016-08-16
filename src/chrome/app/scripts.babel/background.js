@@ -100,6 +100,10 @@
       chrome.browserAction.setBadgeText({
         'text': num ? String(num) : false
       });
+
+      chrome.browserAction.setBadgeBackgroundColor({
+        'color': '#43a047'
+      });
     },
 
     getEnvironmentCookiePromise: function(){
