@@ -8,6 +8,8 @@ import {stream as wiredep} from 'wiredep';
 
 const $ = gulpLoadPlugins();
 
+var ENV = 'dev';
+
 gulp.task('extras', () => {
   return gulp.src([
     'app/*.*',
@@ -19,7 +21,7 @@ gulp.task('extras', () => {
   ], {
     base: 'app',
     dot: true
-  }).pipe(gulp.dest('dist'));
+  }).pipe(gulp.dest(ENV));
 });
 
 function lint(files, options) {
@@ -49,7 +51,7 @@ gulp.task('images', () => {
       console.log(err);
       this.end();
     })))
-    .pipe(gulp.dest('dist/images'));
+    .pipe(gulp.dest(ENV + '/images'));
 });
 
 gulp.task('html',  () => {
@@ -60,7 +62,7 @@ gulp.task('html',  () => {
     .pipe($.if('*.css', $.cleanCss({compatibility: '*'})))
     .pipe($.sourcemaps.write())
     .pipe($.if('*.html', $.htmlmin({removeComments: true, collapseWhitespace: true})))
-    .pipe(gulp.dest('dist'));
+    .pipe(gulp.dest(ENV));
 });
 
 gulp.task('chromeManifest', () => {
@@ -78,7 +80,7 @@ gulp.task('chromeManifest', () => {
   .pipe($.if('*.js', $.sourcemaps.init()))
   .pipe($.if('*.js', $.uglify()))
   .pipe($.if('*.js', $.sourcemaps.write('.')))
-  .pipe(gulp.dest('dist'));
+  .pipe(gulp.dest(ENV));
 });
 
 gulp.task('babel', () => {
@@ -89,9 +91,17 @@ gulp.task('babel', () => {
       .pipe(gulp.dest('app/scripts'));
 });
 
-gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
+gulp.task('clean', function(){
+  return del.sync(['.tmp', ENV]);
+});
 
-gulp.task('watch', ['lint', 'babel', 'html'], () => {
+gulp.task('serve', () => {
+  ENV = getArg('--env') ? getArg('--env') : ENV;
+
+  runSequence('copyEnvironmentFile', 'lint', 'babel', 'watch');
+});
+
+gulp.task('watch', () => {
   $.livereload.listen();
 
   gulp.watch([
@@ -108,7 +118,7 @@ gulp.task('watch', ['lint', 'babel', 'html'], () => {
 });
 
 gulp.task('size', () => {
-  return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
+  return gulp.src(ENV + '/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 
 gulp.task('wiredep', () => {
@@ -120,19 +130,34 @@ gulp.task('wiredep', () => {
 });
 
 gulp.task('package', function () {
-  var manifest = require('./dist/manifest.json');
-  return gulp.src('dist/**')
+  ENV = getArg('--env') ? getArg('--env') : ENV;
+  
+  var manifest = require('./' + ENV + '/manifest.json');
+  return gulp.src(ENV + '/**')
       .pipe($.zip('smart-canvas-' + manifest.version + '.zip'))
-      .pipe(gulp.dest('package'));
+      .pipe(gulp.dest(ENV + '-package'));
 });
 
-gulp.task('build', (cb) => {
+gulp.task('build', () => {
   runSequence(
-    'lint', 'babel', 'chromeManifest',
+    'lint', 'babel', 'copyEnvironmentFile', 'chromeManifest',
     ['html', 'images', 'extras'],
-    'size', cb);
+    'size');
 });
 
-gulp.task('default', ['clean'], cb => {
-  runSequence('build', cb);
+gulp.task('copyEnvironmentFile', () => {
+  return gulp.src('app/vars/' + ENV + '/environment.js')
+      .pipe(gulp.dest('app/vars/'));
 });
+
+gulp.task('default', () => {
+  ENV = getArg('--env') ? getArg('--env') : ENV;
+  
+  runSequence('clean', 'build');
+});
+
+function getArg(key) {
+  var index = process.argv.indexOf(key);
+  var next = process.argv[index + 1];
+  return (index < 0) ? null : (!next || next[0] === "-") ? true : next;
+}

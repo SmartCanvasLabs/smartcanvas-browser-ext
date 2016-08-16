@@ -2,9 +2,15 @@ node_modules
 temp
 .tmp
 dist
+dev
+tst
+prd
+app/vars/environment.js
 .sass-cache
 app/bower_components
 test/bower_components
-package
+dev-package
+tst-package
+prd-package
 app/scripts
 
