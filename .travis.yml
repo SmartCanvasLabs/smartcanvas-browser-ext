@@ -15,7 +15,10 @@ deploy:
   provider: releases
   api_key:
     secure: kSxn8a2iRS3H8tv/tt0EZDF3IKBksXqBxTefdipJITE2VrAcpax6eFUtXShsvFIh6cpPa+LvMJ//7F/TqtjVfxMoSAk1CAcfcGWytLxD+IybEmaywuIUFApGQE2ubUHqw045xPzX9WvT9TAXmltZmI9CnTJHroehr3LBAoeOtjssTeaVXd4HRPmAAjAodS9mM2MF5jKPWonGiLrGQ1lVa8OjZxTDglWvnvfIKyLfuELmEO0l9OiC6+bJmvpgs7+UuJtHDPS4fJtXQjmKgdUYsp+kBpw/n+nvlhRTPeeRh5mAuCYO6vGM2NEuG2mNf4j0A9vd6EaRgFs0KjJj1xLkC2OY1p1K7feW+HEm+kGuSHM0loQkcoeuXm6uyf8j1EIJRuf9hDXNr2Grm6PkKemc3xkYvEA73WFsie/Hpcur76wd62c8GH+JPx120kqj7wxZ5yKap7WmH4e7R9PUXeQfGJSEKTMvkgDYoG9BYB9OuL/kmCrvXSFJAB+gt6UQa/Iy5hQj6KeLAyiA71AMpV6DW9C4oCW476bXKTg8qwUOWnYVQDIsT9d+3n3QWfc7Gv9hyrypaBGc5+gW10I8OAkpSD4v9aeYTJNX4sLSYtPQNuOwf20k9IC8GMyfSThCip1AdxYvdHe1DBEorgibjbP4SIK0D123DOP6T2OIgwzJ7tg=
-  file: dev-package/*.zip
+  file: 
+    - dev-package/*.zip
+    - tst-package/*.zip
+    - prd-package/*.zip
   file_glob: true
   skip_cleanup: true
   on:
