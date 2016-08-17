@@ -130,8 +130,6 @@ gulp.task('wiredep', () => {
 });
 
 gulp.task('package', function () {
-  ENV = getArg('--env') ? getArg('--env') : ENV;
-  
   var manifest = require('./' + ENV + '/manifest.json');
   return gulp.src(ENV + '/**')
       .pipe($.zip('smart-canvas-' + manifest.version + '.zip'))
@@ -142,7 +140,8 @@ gulp.task('build', () => {
   runSequence(
     'lint', 'babel', 'copyEnvironmentFile', 'chromeManifest',
     ['html', 'images', 'extras'],
-    'size');
+    'size',
+    'package');
 });
 
 gulp.task('copyEnvironmentFile', () => {
