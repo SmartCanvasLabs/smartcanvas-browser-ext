@@ -2,9 +2,9 @@ node_modules
 temp
 .tmp
 dist
-dev
-tst
-prd
+/dev
+/tst
+/prd
 app/vars/environment.js
 app/images/icons
 .sass-cache
