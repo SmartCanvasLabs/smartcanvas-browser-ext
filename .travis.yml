@@ -3,6 +3,7 @@ sudo: required
 dist: trusty
 before_script:
 - npm install -g bower
+- cd src/chrome
 - npm install
 - bower install
 node_js: 4
