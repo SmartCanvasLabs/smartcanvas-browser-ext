@@ -132,7 +132,7 @@ gulp.task('wiredep', () => {
 gulp.task('package', function () {
   var manifest = require('./' + ENV + '/manifest.json');
   return gulp.src(ENV + '/**')
-      .pipe($.zip('smart-canvas-' + ENV + '.zip'))
+      .pipe($.zip('smartcanvas-' + ENV + '.zip'))
       .pipe(gulp.dest(ENV + '-package'));
 });
 
