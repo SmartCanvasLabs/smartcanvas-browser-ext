@@ -7,23 +7,21 @@ before_script:
 - npm install
 - bower install
 node_js: 4
-# 
-# branches:
-#   except: gh-pages
-# addons:
-#   firefox: latest
-#   apt:
-#     sources:
-#     - google-chrome
-#     packages:
-#     - google-chrome-stable
 script:
 - gulp --env dev
 - gulp --env tst
 - gulp --env prd
-
-# - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct -s 'default'; fi
-# env:
-#   global:
-#   - secure: celV+5Du87f9b1crJIDVzagPdhGDDSPz+rOl3rKMKfuhakWW2MOEzqHG22CSG8uI54esauwBVNBTUXrW6ZssdHYpm95w0SYtRZUWxggdqkpiYS1/xy9If+WE8V4zu8v1vk8N+hDCvldfEqloCx5DewxaOU6Rh9xkNutv1OfdjN5i8z62e4YrKtgXihpT5fzoVK4We4i5CsDBIlTJH8S+Wu6Rwq0UuC8UYmJ49X2l9Vl66z1F6PlEWyzXAWZ29RofE4iRMaClxLUxMJleNdd1LLGeOLk0Ar8VpXqfMYWh+e4IDLQ6N/TNUFOEZb6nwmQI4E0Fq6oXfwP9ogQ9VOH0tm1Y+cCFYKQO4XI7hyFEeVRpQj5qOJigdM/fCqSH4zIe726GO9QuXMACVK2Jqs2AESyzrwo/Mw4adpNqNU44n+2Qsi81IL1G2Y8Snwu6Neo+SFqgRS+O5pFb+x5ucdD+i0NqjfNyTXle5W8HJiJ7Bmc8F6zaNPxwVX2t/scAGwsQU9U6hg2bI4lpalIBAqnjR1mVXU31v9WZB7GX+WphCJlfW7OhF2ZW9XJ7EOJN5MO1FblE2armRoSN6xFpiM44ztgsJJArNWymVgZVIZkLfghLMMoxC14f8pSyMvUeJ9zazquGO8EANGf4W6Qm68oIqoDKMNQbVX7dOJ6jUxDz8r0=
-#   - secure: FxCi49u33PFGzNz3iYg9wbDws1fjwreUAbwMcTMxVztDSjdfsLEtBplXsdvxfDKZBaja+7D4P2fpzBeh0pZjO1hDeJgh8npQmzzXeGFDwbPS9rqV8kKL7Qy9VI3TbpbXHPMf4tf4LDmtGzGfDyhzExSfjpFNPofRPXiW/UFQBTXM+D6CvhfFsYiwkiMolPo3SlBSxOBR/rDfDXqmeN8Q3FdyZ4C1oM2ZSvrzITsi972izPtrfCs4IMkj60q7z7W493jFnXuDssLoIHITLxxVUPaxWjihUoDxLcVVnqBErRpZwfwiawBr+CkoKhh6na5G8vZvnyjt8myX9ic31cmuO8dUy/W1twFdq3lPgx6yt/1QTNXCF/0e6rMOQ2zannijyyfhgd+WayzMQaDy+2BNPQfkNF6Hh1XPtZvL37oJOR33bcujxD0haPfa2mO6X1HrYJQmCTCSd118hT1dhr7fq30I1CrQKGgZ6Bg3dgxLYph73vKmhNVOwhK73t/3cIhbGM9IhPE+IXpdUtsl/HkYEeRb31pKY5xnKTdizQZHYKkzF15xlOj/sh3l6PaL+98QgS062nThefIi5fBks7IO/KD2Wsn2Py2Goh8L26JMVxH0MBzM42e0L9MtFA+NJpOrZEdc4b3ZoRln1GM46pVBsDzbbnENk3L63HEg3xm2rMU=
+deploy:
+  provider: releases
+  api_key:
+    secure: kSxn8a2iRS3H8tv/tt0EZDF3IKBksXqBxTefdipJITE2VrAcpax6eFUtXShsvFIh6cpPa+LvMJ//7F/TqtjVfxMoSAk1CAcfcGWytLxD+IybEmaywuIUFApGQE2ubUHqw045xPzX9WvT9TAXmltZmI9CnTJHroehr3LBAoeOtjssTeaVXd4HRPmAAjAodS9mM2MF5jKPWonGiLrGQ1lVa8OjZxTDglWvnvfIKyLfuELmEO0l9OiC6+bJmvpgs7+UuJtHDPS4fJtXQjmKgdUYsp+kBpw/n+nvlhRTPeeRh5mAuCYO6vGM2NEuG2mNf4j0A9vd6EaRgFs0KjJj1xLkC2OY1p1K7feW+HEm+kGuSHM0loQkcoeuXm6uyf8j1EIJRuf9hDXNr2Grm6PkKemc3xkYvEA73WFsie/Hpcur76wd62c8GH+JPx120kqj7wxZ5yKap7WmH4e7R9PUXeQfGJSEKTMvkgDYoG9BYB9OuL/kmCrvXSFJAB+gt6UQa/Iy5hQj6KeLAyiA71AMpV6DW9C4oCW476bXKTg8qwUOWnYVQDIsT9d+3n3QWfc7Gv9hyrypaBGc5+gW10I8OAkpSD4v9aeYTJNX4sLSYtPQNuOwf20k9IC8GMyfSThCip1AdxYvdHe1DBEorgibjbP4SIK0D123DOP6T2OIgwzJ7tg=
+  file: 
+    - dev
+    - tst
+    - prd
+    - dev-package
+    - tst-package
+    - prd-package
+  skip_cleanup: true
+  on:
+    repo: SmartCanvasLabs/smartcanvas-browser-ext
