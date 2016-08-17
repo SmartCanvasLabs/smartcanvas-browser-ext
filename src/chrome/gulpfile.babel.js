@@ -38,7 +38,7 @@ gulp.task('lint', lint('app/scripts.babel/**/*.js', {
   }
 }));
 
-gulp.task('images', () => {
+gulp.task('images', () => { 
   return gulp.src('app/images/**/*')
     .pipe(gulp.dest(ENV + '/images'));
 });
