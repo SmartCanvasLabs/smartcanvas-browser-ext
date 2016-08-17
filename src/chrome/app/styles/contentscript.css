@@ -52,7 +52,7 @@
   background-color: #f9f9f9;
   border: none;
   border-radius: 3px;
-  z-index: 9100;
+  z-index: 999999;
   box-shadow: 0 10px 32px 0 rgba(0, 0, 0, 0.36), 0 16px 16px 0 rgba(0, 0, 0, 0.04);
 }
 
@@ -116,6 +116,7 @@
       .sce-preloader .sce-loader .sce-span01 {
         content: "";
         position: absolute;
+        margin: 0;
 
         top: 5px;
         left: 5px;
@@ -139,6 +140,7 @@
       .sce-preloader .sce-loader .sce-span02 {
         content: "";
         position: absolute;
+        margin: 0;
 
         top: 15px;
         left: 15px;
@@ -162,6 +164,7 @@
       .sce-preloader  .sce-loader .sce-span03 {
         content: "";
         position: absolute;
+        margin: 0;
 
         top: 25px;
         left: 25px;
