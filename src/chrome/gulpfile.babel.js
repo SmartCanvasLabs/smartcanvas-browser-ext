@@ -98,7 +98,7 @@ gulp.task('clean', function(){
 gulp.task('serve', () => {
   ENV = getArg('--env') ? getArg('--env') : ENV;
 
-  runSequence('copyEnvironmentFile', 'lint', 'babel', 'watch');
+  runSequence('copyIcons', 'copyEnvironmentFile', 'lint', 'babel', 'watch');
 });
 
 gulp.task('watch', () => {
@@ -138,7 +138,7 @@ gulp.task('package', function () {
 
 gulp.task('build', () => {
   runSequence(
-    'lint', 'babel', 'copyEnvironmentFile', 'chromeManifest',
+    'lint', 'babel', 'copyIcons', 'copyEnvironmentFile', 'chromeManifest',
     ['html', 'images', 'extras'],
     'size',
     'package');
@@ -147,6 +147,11 @@ gulp.task('build', () => {
 gulp.task('copyEnvironmentFile', () => {
   return gulp.src('app/vars/' + ENV + '/environment.js')
       .pipe(gulp.dest('app/vars/'));
+});
+
+gulp.task('copyIcons', () => {
+  return gulp.src('app/images/' + ENV + '/icons/*')
+      .pipe(gulp.dest('app/images/icons'));
 });
 
 gulp.task('default', () => {

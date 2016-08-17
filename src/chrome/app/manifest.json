@@ -2,11 +2,11 @@
   "name": "Smart Canvas",
   "version": "0.0.1",
   "manifest_version": 2,
-  "description": "__MSG_appDescription__",
+  "description": "Chrome Extension - Smart Canvas",
   "omnibox": { "keyword": "scanvas" },
   "icons": {
-    "16": "images/icon-16.png",
-    "128": "images/icon-128.png"
+    "16": "images/icons/icon-16.png",
+    "128": "images/icons/icon-128.png"
   },
   "default_locale": "en",
   "background": {
@@ -64,14 +64,14 @@
 
   "browser_action": {
     "default_icon": {
-      "19": "images/icon-19.png",
-      "38": "images/icon-38.png"
+      "19": "images/icons/icon-19.png",
+      "38": "images/icons/icon-38.png"
     },
     "default_title": "Smart Canvas"
   },
 
   "web_accessible_resources": [
-    "images/icon-48.png",
+    "images/icons/icon-48.png",
     "scripts/libs/jquery-1.12.3.min.js",
     "scripts/libs/gmail.js",
     "scripts/gmail-content-main.js"
