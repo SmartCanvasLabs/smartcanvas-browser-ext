@@ -61,7 +61,7 @@
 
     noCardsAvailable.querySelectorAll('.sce-no-cards-available-close')[0].addEventListener('click', function(){
       destroy();
-    })
+    });
 
     content = document.createElement('div');
     content.className = 'sce-content';
