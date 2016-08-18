@@ -54,8 +54,14 @@
     noCardsAvailable = document.createElement('div');
     noCardsAvailable.className = 'sce-no-cards-available';
     noCardsAvailable.innerHTML =
+      '<a class="sce-no-cards-available-close" href=""></a>' +
       '<div class="sce-no-cards-available-image"></div>' +
-      '<p class="sce-no-cards-available-message">No Official Communications</p>';
+      '<p class="sce-no-cards-available-message">Yay, you are 100% up to date with all official communications</p>' +
+      '<a class="sce-no-cards-available-button" href="http://www.smartcanvas.com" target="_blank">SMARTCANVAS</a>'
+
+    noCardsAvailable.querySelectorAll('.sce-no-cards-available-close')[0].addEventListener('click', function(){
+      destroy();
+    })
 
     content = document.createElement('div');
     content.className = 'sce-content';
