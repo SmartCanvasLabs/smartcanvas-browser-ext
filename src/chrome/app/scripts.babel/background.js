@@ -77,19 +77,45 @@
       });
     },
 
+    dynamicallyInjectContentScript: function(callback){
+
+      chrome.tabs.executeScript({
+        file: 'scripts/contentscript.js'
+      },function(){
+        chrome.tabs.insertCSS({
+          file: 'styles/contentscript.css'
+        }, callback);
+      });
+
+    },
+
     openDialogMessage: function(){
       var that = this;
 
       that.getTenantAndStartENV(function(){
         that.getEnvironmentCookiePromise()
           .then(function(token){
+            
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
               chrome.tabs.sendMessage(tabs[0].id, { 
                 type: 'open-dialog', 
                 token: token, 
                 environment: ENVIRONMENT
+              },function(response){
+                
+                if(!response){
+                  that.dynamicallyInjectContentScript(function(){
+                    chrome.tabs.sendMessage(tabs[0].id, { 
+                      type: 'open-dialog', 
+                      token: token, 
+                      environment: ENVIRONMENT
+                    });
+                  });
+                }
+
               });
             });
+            
           }, function(){
             that.redirectToLogin();
           });        

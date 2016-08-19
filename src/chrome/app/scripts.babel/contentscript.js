@@ -57,7 +57,7 @@
       '<a class="sce-no-cards-available-close" href=""></a>' +
       '<div class="sce-no-cards-available-image"></div>' +
       '<p class="sce-no-cards-available-message">Yay, you are 100% up to date with all official communications</p>' +
-      '<a class="sce-no-cards-available-button" href="http://www.smartcanvas.com" target="_blank">SMARTCANVAS</a>'
+      '<a class="sce-no-cards-available-button" href="http://www.smartcanvas.com" target="_blank">SMARTCANVAS</a>';
 
     noCardsAvailable.querySelectorAll('.sce-no-cards-available-close')[0].addEventListener('click', function(){
       destroy();
@@ -108,8 +108,10 @@
       if(request.type == 'open-dialog'){
         if(content){
           destroy();
+          sendResponse('destroy-executed');
         }else{
           create(request.token, request.environment);
+          sendResponse('create-executed');
         }
       }
     });
