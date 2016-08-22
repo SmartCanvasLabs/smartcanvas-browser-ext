@@ -4,6 +4,7 @@
   "manifest_version": 2,
   "description": "Chrome Extension - Smart Canvas",
   "omnibox": { "keyword": "scanvas" },
+  "content_security_policy": "script-src 'self' https://cdn.firebase.com https://*.firebaseio.com; object-src 'self'",
   "icons": {
     "16": "images/icons/icon-16.png",
     "128": "images/icons/icon-128.png"
@@ -11,6 +12,7 @@
   "default_locale": "en",
   "background": {
     "scripts": [
+      "bower_components/firebase/firebase.js",
       "vars/environment.js",
       "scripts/chromereload.js",
       "scripts/Omni.js",

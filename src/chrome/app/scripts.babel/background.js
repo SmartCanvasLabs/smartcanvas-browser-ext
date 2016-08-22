@@ -1,31 +1,40 @@
+var FIREBASE;
+
 (function() {
   var omni;
+  
 
   var backgroundScript = {
     init: function(){
-      this.getTenantAndStartENV();
       this.events(); 
     },
 
-    getTenantAndStartENV: function(callback){
+    startENVIRONMENT: function(){
       var that = this;
 
-      chrome.cookies.getAll({
-        domain: ENVIRONMENT._domain,
-        name: 'tenant'
-      }, function(cookies){
-        var tenant = cookies[0] && cookies[0].value;
+      return new Promise(function(resolve, reject){
 
-        ENVIRONMENT.domain = ENVIRONMENT._domainProtocol + tenant + '.' +  ENVIRONMENT._domain;
-        ENVIRONMENT.domainApi = ENVIRONMENT._domainProtocol + tenant + '.' +  ENVIRONMENT._domainApi;
-        ENVIRONMENT.searchUrl = ENVIRONMENT.domain + ENVIRONMENT._searchPath;
-        ENVIRONMENT.officialCardsApi = ENVIRONMENT.domainApi + ENVIRONMENT._officialCardsApiPath;
+        chrome.cookies.getAll({
+          domain: ENVIRONMENT._domain,
+          name: 'tenant'
+        }, function(cookies){
+          var tenant = cookies[0] && cookies[0].value;
 
-        omni = new Omni(ENVIRONMENT.searchUrl);
+          if(!tenant){
+            reject();
+          }
 
-        if(callback){
-          callback();
-        }
+          ENVIRONMENT.domain = ENVIRONMENT._domainProtocol + tenant + '.' +  ENVIRONMENT._domain;
+          ENVIRONMENT.domainApi = ENVIRONMENT._domainProtocol + tenant + '.' +  ENVIRONMENT._domainApi;
+          ENVIRONMENT.searchUrl = ENVIRONMENT.domain + ENVIRONMENT._searchPath;
+          ENVIRONMENT.officialCardsApi = ENVIRONMENT.domainApi + ENVIRONMENT._officialCardsApiPath;
+          ENVIRONMENT.userApi = ENVIRONMENT.domainApi + ENVIRONMENT._userApiPath;
+
+          omni = new Omni(ENVIRONMENT.searchUrl);
+
+          resolve(ENVIRONMENT);
+        });
+
       });
     },
 
@@ -42,89 +51,87 @@
     //   });
     // },
 
-    redirectToLoginIfNotlogged: function(){
+
+    userLogin: function(){
       var that = this;
 
-      that.makeAjax({
-        url: ENVIRONMENT.officialCardsApi,
-        success: function(data){
-          var json = JSON.parse(data.response);
+      return new Promise(function(resolve){
 
-          that.redirectToChromeExtensionPage();
-          that.setBadge(json.meta.count);
+        that.startENVIRONMENT()
+          .then(function(env){
+            
+            that.makeAjax({
+              url: env.userApi
+            })
+              .then(function(data){
+                var user = JSON.parse(data.response);
+                that.startFirebase(user);
+                resolve();
+              }, function(){
+                that.redirectToLogin();
+              });
+
+          });
+
+      });
+
+    },
+
+    startFirebase: function(user){
+      var that = this;
+
+      FIREBASE = new Firebase(user.firebase.firebaseURL);
+
+      FIREBASE.authWithCustomToken(user.firebase.token, function(error, authData) {
+        if (error) {
+          console.log('Firebase Authentication Failed', error);
+          that.userLogin();
+        } else {
+          console.log('Firebase Authenticated successfully with payload:', authData);
+
+          FIREBASE.child('users/' + authData.uid + '/foryou-card-stream').on('value', function(v) {
+            console.debug('firebase update', 'users/' + authData.uid + '/foryou-card-stream', v);
+            that.updateBadgeNumber();
+          }, function(e){
+            console.debug('firebase on-value error -> redirecting to login: ', e);
+            that.userLogin();
+          });
+
         }
       });
+
     },
 
-    redirectToChromeExtensionPage: function(){
-      chrome.tabs.create({ url: ENVIRONMENT.domain + '/f/chrome-extension' });
-    },
+    loginIfFirebaseIsNotAuthenticated: function(){
+      var that = this;
 
-    redirectToLogin: function() {
-      var newURL = ENVIRONMENT.domainLogin + '/?reason=401&redirectFrom='+encodeURIComponent(ENVIRONMENT.domain + '/f/chrome-extension') + '#!/signin';
-      chrome.tabs.create({ url: newURL });
+      if( !(FIREBASE && FIREBASE.getAuth && FIREBASE.getAuth()) ){
+        that.userLogin();
+      }
     },
 
     updateBadgeNumber: function(){
       var that = this;
 
-      that.makeAjax({
-        url: ENVIRONMENT.officialCardsApi,
-        success: function(data){
-          var json = JSON.parse(data.response);
-          that.setBadge(json.meta.count);
-        }
-      });
-    },
+      that.startENVIRONMENT()
+        .then(function(env){
 
-    dynamicallyInjectContentScript: function(callback){
-
-      chrome.tabs.executeScript({
-        file: 'scripts/contentscript.js'
-      },function(){
-        chrome.tabs.insertCSS({
-          file: 'styles/contentscript.css'
-        }, callback);
-      });
-
-    },
-
-    openDialogMessage: function(){
-      var that = this;
-
-      that.getTenantAndStartENV(function(){
-        that.getEnvironmentCookiePromise()
-          .then(function(token){
-            
-            chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-              chrome.tabs.sendMessage(tabs[0].id, { 
-                type: 'open-dialog', 
-                token: token, 
-                environment: ENVIRONMENT
-              },function(response){
-                
-                if(!response){
-                  that.dynamicallyInjectContentScript(function(){
-                    chrome.tabs.sendMessage(tabs[0].id, { 
-                      type: 'open-dialog', 
-                      token: token, 
-                      environment: ENVIRONMENT
-                    });
-                  });
-                }
-
-              });
-            });
-            
+          that.makeAjax({
+            url: env.officialCardsApi
+          })
+          .then(function(data){
+            var json = JSON.parse(data.response);
+            that.setBadge(json.meta.count);
           }, function(){
             that.redirectToLogin();
-          });        
-      });
+          });
+
+        });
     },
 
     setBadge: function(num){
       chrome.browserAction.setBadgeText({
-        'text': num ? String(num) : false
+        'text': num ? String(num) : ''
       });
 
       chrome.browserAction.setBadgeBackgroundColor({
@@ -132,47 +139,64 @@
       });
     },
 
-    getEnvironmentCookiePromise: function(){
+    dynamicallyInjectContentScript: function(callback){
+      chrome.tabs.executeScript({
+        file: 'scripts/contentscript.js'
+      },function(){
+        chrome.tabs.insertCSS({
+          file: 'styles/contentscript.css'
+        }, callback);
+      });
+    },
+
+    getToken: function(){
+      var that = this;
       return new Promise(function(resolve, reject) {        
-        chrome.cookies.getAll({
-          url: ENVIRONMENT.domain,
-          name: 'acctk'
-        }, function(cookies){
-          if(cookies[0]){
-            resolve(cookies[0].value);
-          }else{
-            reject();
-          }
-        });
+        
+        that.startENVIRONMENT()
+          .then(function(env){
+
+            chrome.cookies.getAll({
+              url: env.domain,
+              name: 'acctk'
+            }, function(cookies){
+              if(cookies[0]){
+                resolve(cookies[0].value);
+              }else{
+                reject();
+              }
+            });
+
+          });
+        
       });
     },
 
     makeAjax: function(obj){
       var that = this;
 
-      that.getEnvironmentCookiePromise()
-        .then(function(token){
-          that.createPromiseHttpRequest({
-            url: obj.url,
-            method: obj.method,
-            data: obj.data,
-            token: token
-          })
-          .then(function(data){
-            if(obj.success){
-              obj.success(data);
-            }
-          }, function(e){
-            if(obj.error){
-              obj.error(e);
-            }
+      return new Promise(function(resolve, reject){
+        that.getToken()
+          .then(function(token){
+            that.xhrPromise({
+              url: obj.url,
+              method: obj.method,
+              data: obj.data,
+              token: token
+            })
+            .then(function(data){
+              resolve(data);
+            }, function(e){
+              reject(e);
+            });
+          }, function(){
+            reject();
           });
-        }, function(){
-          that.redirectToLogin();
         });
+
     },
 
-    createPromiseHttpRequest: function(opts) {
+    xhrPromise: function(opts) {
       opts = opts || {};
       opts.method = opts.method || 'GET';
 
@@ -204,6 +228,68 @@
       });
     },
 
+    redirectToChromeExtensionPage: function(){
+      var that = this;
+
+      that.startENVIRONMENT()
+        .then(function(env){
+          chrome.tabs.create({ url: env.domain + '/f/chrome-extension' });
+        });
+    },
+
+    redirectToLogin: function() {
+      var that = this;
+
+      that.startENVIRONMENT()
+        .then(function(env){
+          var newURL = env.domainLogin + '/?reason=401&redirectFrom='+encodeURIComponent(env.domain + '/f/chrome-extension') + '#!/signin';
+          chrome.tabs.create({ url: newURL });
+          that.setBadge('');
+        });
+    },
+
+    openDialogMessage: function(){
+      var that = this;
+
+      that.loginIfFirebaseIsNotAuthenticated();
+
+      Promise.all([
+        that.startENVIRONMENT(),
+        that.getToken()
+      ])
+
+      .then(function(data){
+        var env = data[0];
+        var token = data[1];
+
+
+          
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+          chrome.tabs.sendMessage(tabs[0].id, { 
+            type: 'open-dialog', 
+            token: token, 
+            environment: env
+          },function(response){
+            
+            if(!response){
+              that.dynamicallyInjectContentScript(function(){
+                chrome.tabs.sendMessage(tabs[0].id, { 
+                  type: 'open-dialog', 
+                  token: token, 
+                  environment: env
+                });
+              });
+            }
+
+          });
+        });
+
+      }, function(){
+        that.redirectToLogin();
+      });
+
+    },
+
     events: function(){
       var that = this;
 
@@ -214,9 +300,10 @@
       });
     
       chrome.runtime.onInstalled.addListener(function(details){
-        console.log('[smartcanvas.onInstalled]');
-        console.log('previousVersion: ', details.previousVersion);
-        that.redirectToLoginIfNotlogged();
+        that.userLogin()
+          .then(function(){
+            that.redirectToChromeExtensionPage();
+          })
       });
 
       chrome.browserAction.onClicked.addListener(function(){
