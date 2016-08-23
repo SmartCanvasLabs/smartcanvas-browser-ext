@@ -121,7 +121,21 @@ var FIREBASE;
           })
           .then(function(data){
             var json = JSON.parse(data.response);
-            that.setBadge(json.meta.count);
+            var cards = json.data[0] && json.data[0].cards;
+            var cardsFiltered = [];
+            var card;
+
+            if (cards && cards.length) {
+              for (var i = 0; i < cards.length; i++) {
+                card = cards[i];
+
+                if(!card.interactionsState.viewed){
+                  cardsFiltered.push(card);
+                }
+              }
+            }
+
+            that.setBadge(cardsFiltered.length);
           }, function(){
             that.redirectToLogin();
           });
