@@ -1,4 +1,5 @@
 var FIREBASE;
+var IS_FIREBASE_ACTIVE;
 
 (function() {
   var omni;
@@ -89,9 +90,16 @@ var FIREBASE;
         } else {
           console.log('Firebase Authenticated successfully with payload:', authData);
 
-          FIREBASE.child('users/' + authData.uid + '/foryou-card-stream').on('value', function(v) {
-            console.debug('firebase update', 'users/' + authData.uid + '/foryou-card-stream', v);
+          FIREBASE.child('users/' + authData.uid + '/action-card-stream').on('value', function(v) {
+            console.debug('firebase update', 'users/' + authData.uid + '/action-card-stream', v);
             that.updateBadgeNumber();
+            if(IS_FIREBASE_ACTIVE){
+              that.sendMessageToContent({ 
+                type: 'show-see-updates'
+              });              
+            }else{
+              IS_FIREBASE_ACTIVE = true;
+            }
           }, function(e){
             console.debug('firebase on-value error -> redirecting to login: ', e);
             that.userLogin();
@@ -276,32 +284,32 @@ var FIREBASE;
         var env = data[0];
         var token = data[1];
 
-
-          
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-          chrome.tabs.sendMessage(tabs[0].id, { 
-            type: 'open-dialog', 
-            token: token, 
-            environment: env
-          },function(response){
-            
-            if(!response){
-              that.dynamicallyInjectContentScript(function(){
-                chrome.tabs.sendMessage(tabs[0].id, { 
-                  type: 'open-dialog', 
-                  token: token, 
-                  environment: env
-                });
+        that.sendMessageToContent({ 
+          type: 'open-dialog', 
+          token: token, 
+          environment: env
+        }, function(response){
+          if(!response){
+            that.dynamicallyInjectContentScript(function(){
+              that.sendMessageToContent({ 
+                type: 'open-dialog', 
+                token: token, 
+                environment: env
               });
-            }
-
-          });
+            });
+          }
         });
 
       }, function(){
         that.redirectToLogin();
       });
 
+    },
+
+    sendMessageToContent: function(message, response){
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+        chrome.tabs.sendMessage(tabs[0].id, message, response);
+      });
     },
 
     events: function(){

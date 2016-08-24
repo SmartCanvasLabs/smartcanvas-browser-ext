@@ -15,6 +15,42 @@
 /*------------------------------------*\
     $NO-CARDS-AVAILABLE
 \*------------------------------------*/
+.sce-see-updates{
+  display: none;
+  position: absolute;
+  top: 60px;
+  width: 100%;
+  text-align: center;
+}
+
+  .sce-see-updates-text{
+    margin: 0;
+    padding: 8px 8px 8px 30px;
+    display: inline-block;
+    background-color: #ffffff;
+    border-radius: 32px;
+    box-shadow: 0 5px 12px 0 rgba(0, 0, 0, 0.34);
+    font: 400 14px 'Roboto', 'Noto', sans-serif;
+    color: #1E88E6;
+    position: relative;
+    cursor: pointer;
+  }
+
+    .sce-see-updates-icon{
+      position: absolute;
+      display: block;
+      top: 6px;
+      left: 6px;
+      width: 20px;
+      height: 20px;
+      background: url('https://lh3.googleusercontent.com/zFcZhiVeN4ntx2l8eV_828bNyq0OGFirvJWqeV9_-79sFZLGrBzGnoIuIcZP-h_UarS7qCMVIOIrv4wRKL0PvQ=s0-e365');
+    }
+
+
+
+/*------------------------------------*\
+    $NO-CARDS-AVAILABLE
+\*------------------------------------*/
 .sce-no-cards-available{
   display: none;
   background-color: #2486EC;
