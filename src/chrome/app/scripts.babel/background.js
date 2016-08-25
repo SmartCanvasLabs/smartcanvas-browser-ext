@@ -161,6 +161,14 @@ var IS_FIREBASE_ACTIVE;
       });
     },
 
+    decrementBadgeNumber: function(){
+      var that = this;
+      
+      chrome.browserAction.getBadgeText({}, function(num){
+        that.setBadge(num - 1);
+      });
+    },
+
     dynamicallyInjectContentScript: function(callback){
       chrome.tabs.executeScript({
         file: 'scripts/contentscript.js'
@@ -339,6 +347,8 @@ var IS_FIREBASE_ACTIVE;
           that.setBadge(request.value);
         }else if(request.type === 'extension-bg-redirect-to-login'){
           that.redirectToLogin();
+        }else if(request.type === 'decrement-badge-number'){
+          that.decrementBadgeNumber();
         }
       });
 

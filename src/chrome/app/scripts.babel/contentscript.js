@@ -150,6 +150,7 @@
       }else if(e.data.type === 'SCE_AJAX_ERROR' && e.data.location === 'CHROME_EXTENSION'){
         chrome.runtime.sendMessage({ type: 'extension-bg-redirect-to-login' });
       }else if(e.data.type === 'SCE_MINI_CARD_CLICKED' && e.data.location === 'CHROME_EXTENSION'){
+        chrome.runtime.sendMessage({ type: 'decrement-badge-number' });
         destroy();
       }
     });
