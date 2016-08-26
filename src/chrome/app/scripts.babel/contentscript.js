@@ -90,6 +90,10 @@
       destroy();
     });
 
+    noCardsAvailable.querySelectorAll('.sce-no-cards-available-button')[0].addEventListener('click', function(){
+      destroy();
+    });
+
     content.appendChild(noCardsAvailable);
   }
 
