@@ -47,11 +47,17 @@ SMARTCANVAS.UTILS = (function(scState) {
 
     sendMessageToContent: function(message){
       return new Promise(function(resolve){
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-          chrome.tabs.sendMessage(tabs[0].id, message, function(response){
-            resolve(response);
+
+        chrome.windows.getCurrent({}, function(currentWindow){
+          chrome.windows.update( currentWindow.id , { focused: true }, function(){
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+              chrome.tabs.sendMessage(tabs[0].id, message, function(response){
+                resolve(response);
+              });
+            });
           });
         });
+
       });
     },
 
