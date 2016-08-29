@@ -15,7 +15,11 @@
       "bower_components/firebase/firebase.js",
       "vars/environment.js",
       "scripts/chromereload.js",
-      "scripts/Omni.js",
+      "scripts/sc-state.js",
+      "scripts/sc-utils.js",
+      "scripts/sc-ajax.js",
+      "scripts/sc-firebase.js",
+      "scripts/sc-api.js",
       "scripts/background.js"
     ]
   },
