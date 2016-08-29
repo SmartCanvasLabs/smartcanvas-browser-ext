@@ -45,9 +45,9 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase) {
             scApi.getUser()
               .then(function(user){
                 that.startOmni();
-                that.firebaseOnChange();
+                that.updateBadgeAndSeeUpdates();
                 scFirebase.startFirebase(user, function(){
-                  that.firebaseOnChange();
+                  that.updateBadgeAndSeeUpdates();
                 });
                 resolve();
               }, function(){
@@ -62,7 +62,7 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase) {
       
     },
 
-    firebaseOnChange: function(){
+    updateBadgeAndSeeUpdates: function(){
       var that = this;
       var newBadgeText;
 
