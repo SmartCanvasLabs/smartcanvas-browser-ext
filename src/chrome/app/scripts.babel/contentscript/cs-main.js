@@ -90,15 +90,20 @@
   }
 
   function destroy(){
+    var oldContent = document.querySelector('.sce-content');
     if(content){
       content.parentNode.removeChild(content);
       content = undefined;      
+    }else if(oldContent){
+      oldContent.parentNode.removeChild(oldContent);
     }
   }
 
   function create(token, bgEnvironment){
     ENVIRONMENT = bgEnvironment;
     TOKEN = token;
+
+    destroy();
 
     content = document.createElement('div');
     content.className = 'sce-content';
