@@ -5,24 +5,28 @@
   "description": "Chrome Extension - Smart Canvas",
   "omnibox": { "keyword": "scanvas" },
   "content_security_policy": "script-src 'self' https://cdn.firebase.com https://*.firebaseio.com; object-src 'self'",
+  
   "icons": {
     "16": "images/icons/icon-16.png",
     "128": "images/icons/icon-128.png"
   },
+
   "default_locale": "en",
+
   "background": {
     "scripts": [
       "bower_components/firebase/firebase.js",
       "vars/environment.js",
-      "scripts/chromereload.js",
-      "scripts/sc-state.js",
-      "scripts/sc-utils.js",
-      "scripts/sc-ajax.js",
-      "scripts/sc-firebase.js",
-      "scripts/sc-api.js",
-      "scripts/background.js"
+      "scripts/background/chromereload.js",
+      "scripts/background/sc-state.js",
+      "scripts/background/sc-utils.js",
+      "scripts/background/sc-ajax.js",
+      "scripts/background/sc-firebase.js",
+      "scripts/background/sc-api.js",
+      "scripts/background/bg-main.js"
     ]
   },
+
   "permissions": [
     "activeTab",
     "tabs",
@@ -42,27 +46,16 @@
     "storage",
     "history"
   ],
+
   "options_ui": {
     "page": "options.html",
     "chrome_style": true
   },
+
   "content_scripts": [
     {
-      "matches": [
-        "http://mail.google.com/*",
-        "https://mail.google.com/*",
-        "http://inbox.google.com/*",
-        "https://inbox.google.com/*"
-      ],
-      "js": [
-        "scripts/gmail-content.js"
-      ],
-      "run_at": "document_end",
-      "all_frames": false
-    },
-    {
       "matches": ["*://*/*"],
-      "js": ["scripts/contentscript.js"],
+      "js": ["scripts/contentscript/cs-main.js"],
       "css": ["styles/contentscript.css"],
       "run_at": "document_start"
     }
@@ -77,9 +70,6 @@
   },
 
   "web_accessible_resources": [
-    "images/icons/icon-48.png",
-    "scripts/libs/jquery-1.12.3.min.js",
-    "scripts/libs/gmail.js",
-    "scripts/gmail-content-main.js"
+    "images/icons/icon-48.png"
   ]
 }

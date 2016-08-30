@@ -64,7 +64,7 @@ SMARTCANVAS.UTILS = (function(scState) {
     dynamicallyInjectContentScript: function(){
       return new Promise(function(resolve){
         chrome.tabs.executeScript({
-          file: 'scripts/contentscript.js'
+          file: 'scripts/contentscript/cs-main.js'
         }, function(){
           chrome.tabs.insertCSS({
             file: 'styles/contentscript.css'

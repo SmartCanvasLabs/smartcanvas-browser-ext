@@ -21,7 +21,7 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase) {
         that.open();
       });
 
-      chrome.runtime.onMessage.addListener(function(request) {
+      chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         if(request.type === 'open-chrome-extension-event'){
           that.open();
         }else if(request.type === 'set-badge'){
@@ -30,6 +30,11 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase) {
           scUtils.redirectToLogin();
         }else if(request.type === 'decrement-badge-number'){
           scUtils.decrementBadgeNumber();
+        }else if(request.type === 'get-token-and-environment'){
+          sendResponse({
+            token: scUtils.ENV.token, 
+            environment: scUtils.ENV
+          });
         }
       });
 
@@ -76,7 +81,8 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase) {
               scUtils.sendMessageToContent({ 
                 type: 'show-see-updates'
               });
-              scUtils.setBadge(newBadgeText);
+
+              scUtils.setBadge(newBadgeText === '0' ? '': newBadgeText);
             }
           });
 
@@ -130,23 +136,27 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase) {
 
       that.checkIfExtensionMustRestart()
         .then(function(){
-          scUtils.sendMessageToContent({ 
-            type: 'open-dialog', 
-            token: scUtils.ENV.token, 
-            environment: scUtils.ENV
-          })
-            .then(function(response){
-              if(!response){
-                scUtils.dynamicallyInjectContentScript()
-                  .then(function(){
-                    scUtils.sendMessageToContent({ 
-                      type: 'open-dialog', 
-                      token: scUtils.ENV.token, 
-                      environment: scUtils.ENV
+          scUtils.getBadge(function(badgeNumber){ 
+            scUtils.sendMessageToContent({ 
+              type: 'open-dialog', 
+              token: scUtils.ENV.token, 
+              environment: scUtils.ENV,
+              badgeNumber: badgeNumber
+            })
+              .then(function(response){
+                if(!response){
+                  scUtils.dynamicallyInjectContentScript()
+                    .then(function(){
+                      scUtils.sendMessageToContent({ 
+                        type: 'open-dialog', 
+                        token: scUtils.ENV.token, 
+                        environment: scUtils.ENV,
+                        badgeNumber: badgeNumber
+                      });
                     });
-                  });
-              }
-            });
+                }
+              });
+          });
         });
 
     },
