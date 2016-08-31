@@ -30,6 +30,7 @@
         }else{
           setStyles(appPreloader, {display: 'none' });
           setStyles(noCardsAvailable, {display: 'flex' });
+          iframeBadgeNumber = '';
         }
       }else if(e.data.type === 'SCE_AJAX_ERROR' && e.data.location === 'CHROME_EXTENSION'){
         chrome.runtime.sendMessage({ type: 'extension-bg-redirect-to-login' });
@@ -53,7 +54,7 @@
           hideContent();
           sendResponse('hide-content-executed');
         }else{
-          if(iframeBadgeNumber && request.badgeNumber && iframeBadgeNumber != request.badgeNumber){
+          if(iframeBadgeNumber != request.badgeNumber){
             refreshContent();
           }
           showContent();
