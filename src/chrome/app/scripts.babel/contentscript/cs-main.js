@@ -53,7 +53,7 @@
           hideContent();
           sendResponse('hide-content-executed');
         }else{
-          if(iframeBadgeNumber != request.badgeNumber){
+          if(iframeBadgeNumber && request.badgeNumber && iframeBadgeNumber != request.badgeNumber){
             refreshContent();
           }
           showContent();
