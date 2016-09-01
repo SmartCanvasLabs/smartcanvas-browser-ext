@@ -4,7 +4,7 @@
   "manifest_version": 2,
   "description": "Chrome Extension - Smart Canvas",
   "omnibox": { "keyword": "scanvas" },
-  "content_security_policy": "script-src 'self' https://cdn.firebase.com https://*.firebaseio.com; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com https://cdn.firebase.com https://*.firebaseio.com; object-src 'self'",
   
   "icons": {
     "16": "images/icons/icon-16.png",
@@ -18,6 +18,7 @@
       "bower_components/firebase/firebase.js",
       "vars/environment.js",
       "scripts/background/chromereload.js",
+      "scripts/background/sc-analytics.js",
       "scripts/background/sc-state.js",
       "scripts/background/sc-utils.js",
       "scripts/background/sc-ajax.js",
@@ -55,6 +56,7 @@
   "content_scripts": [
     {
       "matches": ["*://*/*"],
+      "exclude_matches": ["https://accounts.google.com/*"],
       "js": ["scripts/contentscript/cs-main.js"],
       "css": ["styles/contentscript.css"],
       "run_at": "document_start"

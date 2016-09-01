@@ -31,12 +31,8 @@ SMARTCANVAS.UTILS = (function(scState) {
             url: that.ENV.domain,
             name: 'acctk'
           }, function(cookies){
-            if(cookies[0]){
-              that.ENV.token = cookies[0].value;
-              resolve(that);
-            }else{
-              reject();
-            }
+            that.ENV.token = cookies[0] && cookies[0].value;
+            resolve(that);
           });
 
         });

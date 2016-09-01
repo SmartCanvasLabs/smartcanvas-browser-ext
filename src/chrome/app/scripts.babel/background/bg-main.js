@@ -1,7 +1,6 @@
-var FIREBASE;
 var SMARTCANVAS = SMARTCANVAS || {};
 
-SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase) {
+SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase, scAnalytics) {
 
   return {
 
@@ -9,6 +8,9 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase) {
       var that = this;
 
       chrome.runtime.onInstalled.addListener(function(){
+        
+        scAnalytics.start('UA-83209067-1');
+
         that.startChromeExtension()
           .then(function(){
             scUtils.redirectToChromeExtensionPage();
@@ -31,10 +33,15 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase) {
         }else if(request.type === 'decrement-badge-number'){
           scUtils.decrementBadgeNumber();
         }else if(request.type === 'get-token-and-environment'){
-          sendResponse({
-            token: scUtils.ENV.token, 
-            environment: scUtils.ENV
-          });
+          scUtils.startVARS()
+            .then(function(){
+              sendResponse({
+                token: scUtils.ENV.token, 
+                environment: scUtils.ENV
+              });
+            });
+
+          return true;
         }
       });
 
@@ -120,7 +127,13 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase) {
 
               scApi.getUser()
                 .then(function(user){
-                  scFirebase.authFirebase(user.firebase.token);
+                  if(scFirebase.instance){
+                    scFirebase.authFirebase(user.firebase.token);
+                  }else{
+                    scFirebase.startFirebase(user, function(){
+                      that.updateBadgeAndSeeUpdates();
+                    });
+                  }
                 });
 
               resolve();
@@ -176,6 +189,6 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase) {
 
   };
 
-})(SMARTCANVAS.API, SMARTCANVAS.UTILS, SMARTCANVAS.STATE, SMARTCANVAS.FIREBASE);
+})(SMARTCANVAS.API, SMARTCANVAS.UTILS, SMARTCANVAS.STATE, SMARTCANVAS.FIREBASE, SMARTCANVAS.ANALYTICS);
 
 SMARTCANVAS.APP.init();

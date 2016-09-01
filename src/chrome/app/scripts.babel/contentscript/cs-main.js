@@ -26,14 +26,18 @@
           setStyles(appPreloader, {display: 'none' });
           setStyles(iframe, {display: 'block' });
           iframeBadgeNumber = e.data.length;
-          // chrome.runtime.sendMessage({ type: 'set-badge', value: e.data.length });
+          chrome.runtime.sendMessage({ type: 'set-badge', value: e.data.length });
         }else{
           setStyles(appPreloader, {display: 'none' });
           setStyles(noCardsAvailable, {display: 'flex' });
           iframeBadgeNumber = '';
         }
       }else if(e.data.type === 'SCE_AJAX_ERROR' && e.data.location === 'CHROME_EXTENSION'){
-        chrome.runtime.sendMessage({ type: 'extension-bg-redirect-to-login' });
+        hideContent();
+
+        if(!location.hash.match(/signin/g)){
+          chrome.runtime.sendMessage({ type: 'extension-bg-redirect-to-login' });  
+        }
       }else if(e.data.type === 'SCE_MINI_CARD_CLICKED' && e.data.location === 'CHROME_EXTENSION'){
         // chrome.runtime.sendMessage({ type: 'decrement-badge-number' });
         hideContent();
@@ -159,7 +163,7 @@
     noCardsAvailable = document.createElement('div');
     noCardsAvailable.className = 'sce-no-cards-available';
     noCardsAvailable.innerHTML =
-      '<a class="sce-no-cards-available-close" href=""></a>' +
+      '<a class="sce-no-cards-available-close" href="javascript:void(0);"></a>' +
       '<div class="sce-no-cards-available-image"></div>' +
       '<p class="sce-no-cards-available-message">Yay, you are 100% up to date with all official communications</p>' +
       '<a class="sce-no-cards-available-link" href="http://www.smartcanvas.com" target="_blank">SMARTCANVAS</a>';

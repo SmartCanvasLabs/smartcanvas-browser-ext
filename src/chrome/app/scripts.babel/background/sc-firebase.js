@@ -3,7 +3,7 @@ var SMARTCANVAS = SMARTCANVAS || {};
 SMARTCANVAS.FIREBASE = (function(scUtils) {
   return {
 
-    instance: {},
+    instance: null,
     firebaseToken: '',
 
     startFirebase: function(user, onChange){
