@@ -1,4 +1,5 @@
 var ENVIRONMENT = {
+  _analyticsAccount: 'UA-83209067-2',
   _domainProtocol: 'https://',
   _domain: 'smartcanvas.com',
   _searchPath: '/s/',

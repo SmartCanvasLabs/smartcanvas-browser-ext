@@ -7,8 +7,7 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase, scAnalytics) {
     init: function(){
       var that = this;
 
-      scAnalytics.start('UA-83209067-1');
-      // UA-83209067-2
+      scAnalytics.start(ENVIRONMENT._analyticsAccount);
 
       chrome.runtime.onInstalled.addListener(function(){
         

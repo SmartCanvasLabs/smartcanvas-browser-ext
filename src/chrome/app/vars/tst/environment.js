@@ -1,4 +1,5 @@
 var ENVIRONMENT = {
+  _analyticsAccount: 'UA-83209067-1',
   _domainProtocol: 'https://',
   _domain: 'scanvas.me',
   _searchPath: '/s/',
