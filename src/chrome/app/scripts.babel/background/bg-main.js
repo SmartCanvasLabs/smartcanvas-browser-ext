@@ -7,9 +7,12 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase, scAnalytics) {
     init: function(){
       var that = this;
 
+      scAnalytics.start('UA-83209067-1');
+      // UA-83209067-2
+
       chrome.runtime.onInstalled.addListener(function(){
         
-        scAnalytics.start('UA-83209067-1');
+        scAnalytics.installed();
 
         that.startChromeExtension()
           .then(function(){
@@ -30,6 +33,14 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase, scAnalytics) {
           scUtils.setBadge(request.value);
         }else if(request.type === 'extension-bg-redirect-to-login'){
           scUtils.redirectToLogin();
+        }else if(request.type === 'extension-bg-analytics-official-communication-time'){
+          scAnalytics.getCards(request.time);
+        }else if(request.type === 'extension-bg-analytics-no-cards-available-close'){
+          scAnalytics.closed();
+        }else if(request.type === 'extension-bg-analytics-no-cards-available-link'){
+          scAnalytics.noCardsAvailableSmartCanvasLinkClicked();
+        }else if(request.type === 'extension-bg-analytics-card-clicked'){
+          scAnalytics.cardClicked(request.cardId);
         }else if(request.type === 'decrement-badge-number'){
           scUtils.decrementBadgeNumber();
         }else if(request.type === 'get-token-and-environment'){
@@ -157,7 +168,11 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase, scAnalytics) {
               badgeNumber: badgeNumber
             })
               .then(function(response){
-                if(!response){
+                if(response === 'hide-content-executed'){
+                  scAnalytics.closed();
+                }else if(response === 'show-content-executed'){
+                  scAnalytics.opened();
+                }else{
                   scUtils.dynamicallyInjectContentScript()
                     .then(function(){
                       scUtils.sendMessageToContent({ 
@@ -167,6 +182,8 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase, scAnalytics) {
                         badgeNumber: badgeNumber
                       });
                     });
+
+                  scAnalytics.opened();
                 }
               });
           });
@@ -178,6 +195,9 @@ SMARTCANVAS.APP = (function(scApi, scUtils, scState, scFirebase, scAnalytics) {
       //Refernce: https://github.com/ProLoser/Github-Omnibox
       chrome.omnibox.onInputEntered.addListener(function(text) {
         if(text){
+          
+          scAnalytics.omniSearch(text);
+
           chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
             chrome.tabs.update(tabs[0].id, {
               url: scUtils.ENV.searchUrl + text

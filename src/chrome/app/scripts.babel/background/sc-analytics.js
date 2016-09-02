@@ -1,21 +1,55 @@
 var SMARTCANVAS = SMARTCANVAS || {};
-var _gaq = _gaq || [];
 
 SMARTCANVAS.ANALYTICS = (function() {
   return {
 
     start: function(account){
-      _gaq.push(['_setAccount', account]);
-      _gaq.push(['_trackPageview', '/extension/installed']);
+      var that = this;
 
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = 'https://ssl.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      if (!window.ga) {
+        (function(){
+          window.ga = function() {
+            (window.ga.q = window.ga.q || []).push(arguments);
+          }, window.ga.l = 1 * new Date();
+          var tag = 'script';
+          var a = document.createElement(tag);
+          var m = document.getElementsByTagName(tag)[0];
+          a.async = 1;
+          a.src = 'https://www.google-analytics.com/analytics.js';
+          m.parentNode.insertBefore(a, m);
+        })();
+
+        ga('create', account, 'auto');
+        ga('set', 'checkProtocolTask', null);
+      }
     },
 
-    time: function(){
-      var time = Math.floor(Math.random() * 100) + 1;
-      _gaq.push(['_trackEvent', 'teste3', String(time) ]);
+    installed: function(){
+      ga( 'send', 'event', 'lifeCycle', 'installed' );
+    },
+
+    getCards: function(time){      
+      ga( 'send', 'event', 'ajax', 'getCards', String(new Date()), time );
+    },
+
+    opened: function(){
+      ga( 'send', 'event', 'userAction', 'opened' );
+    },
+
+    closed: function(){
+      ga( 'send', 'event', 'userAction', 'closed' );
+    },
+
+    noCardsAvailableSmartCanvasLinkClicked: function(){
+      ga( 'send', 'event', 'userAction', 'noCardsAvailableSmartCanvasLinkClicked' );
+    },
+
+    cardClicked: function(cardId){
+      ga( 'send', 'event', 'userAction', 'cardClicked', cardId );
+    },
+
+    omniSearch: function(term){      
+      ga( 'send', 'event', 'userAction', 'omniSearch', term );
     }
 
   };

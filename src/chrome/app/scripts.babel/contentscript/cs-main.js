@@ -21,6 +21,7 @@
     window.addEventListener('message', function(e){
       if(e.data.type === 'SCE_CLOSE' && e.data.location === 'CHROME_EXTENSION'){
         hideContent();
+        chrome.runtime.sendMessage({ type: 'extension-bg-analytics-no-cards-available-close' });
       }else if(e.data.type === 'SCE_LENGTH' && e.data.location === 'CHROME_EXTENSION'){
         if(e.data.length){
           setStyles(appPreloader, {display: 'none' });
@@ -36,11 +37,14 @@
         hideContent();
 
         if(!location.hash.match(/signin/g)){
-          chrome.runtime.sendMessage({ type: 'extension-bg-redirect-to-login' });  
+          chrome.runtime.sendMessage({ type: 'extension-bg-redirect-to-login' });
         }
       }else if(e.data.type === 'SCE_MINI_CARD_CLICKED' && e.data.location === 'CHROME_EXTENSION'){
+        chrome.runtime.sendMessage({ type: 'extension-bg-analytics-card-clicked', cardId: e.data.cardId });
         // chrome.runtime.sendMessage({ type: 'decrement-badge-number' });
         hideContent();
+      }else if(e.data.type === 'SCE_OFFICIAL_COMMUNICATION_AJAX' && e.data.location === 'CHROME_EXTENSION'){
+        chrome.runtime.sendMessage({ type: 'extension-bg-analytics-official-communication-time', time: parseInt(e.data.time) });
       }
     });
 
@@ -170,10 +174,12 @@
 
     noCardsAvailable.querySelectorAll('.sce-no-cards-available-close')[0].addEventListener('click', function(){
       hideContent();
+      chrome.runtime.sendMessage({ type: 'extension-bg-analytics-no-cards-available-close' });
     });
 
     noCardsAvailable.querySelectorAll('.sce-no-cards-available-link')[0].addEventListener('click', function(){
       hideContent();
+      chrome.runtime.sendMessage({ type: 'extension-bg-analytics-no-cards-available-link' });
     });
 
     content.appendChild(noCardsAvailable);
